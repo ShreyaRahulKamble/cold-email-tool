@@ -9,7 +9,7 @@ const cheerio = require('cheerio');
 require('dotenv').config();
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT ||3001;
 
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
