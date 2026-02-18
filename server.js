@@ -10,6 +10,11 @@ const cheerio = require('cheerio');
 require('dotenv').config();
 
 const app = express();
+app.use(express.static(_dirname));
+app.get('/', (req, res) => {
+     res.sendFile(path.join(_dirname,'landing.html'));
+     });
+
 const PORT = process.env.PORT ||3001; 
 
 const razorpay = new Razorpay({
@@ -35,10 +40,6 @@ function updateUser(email, data) {
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(_dirname));
-app.get('/', (req, res) => {
-     res.sendFile(path.join(_dirname,'landing.html'));
-     });
       
 
 // Call Google Gemini API
