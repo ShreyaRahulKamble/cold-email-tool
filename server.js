@@ -10,12 +10,8 @@ const cheerio = require('cheerio');
 require('dotenv').config();
 
 const app = express();
-app.use(express.static(_dirname));
-app.get('/', (req, res) => {
-     res.sendFile(path.join(_dirname,'landing.html'));
-     });
 
-const PORT = process.env.PORT ||3001; 
+const PORT = process.env.PORT || 10000; 
 
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
@@ -40,6 +36,8 @@ function updateUser(email, data) {
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static(_dirname));
+
       
 
 // Call Google Gemini API
@@ -208,9 +206,13 @@ app.post('/api/verify-payment', async (req, res) => {
 app.get('/api/user/:email', (req, res) => {
     res.json({ success: true, user: getUser(req.params.email) });
 });
+app.get('/', (req, res) => {
+     res.sendFile(path.join(_dirname,'landing.html'));
+     });
+
 
 app.listen(PORT, () => {
-    console.log('\n✅ Cold Email Tool is RUNNING!');
+    console.log('\n✅ Cold Email Tool is RUNNING on port ${PORT}');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log(`📧 Landing Page : /landing.html`);
     console.log(`⚡ App          : /app.html`);
