@@ -36,7 +36,7 @@ function updateUser(email, data) {
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(_dirname));
+app.use(express.static(__dirname));
 
       
 
@@ -207,7 +207,7 @@ app.get('/api/user/:email', (req, res) => {
     res.json({ success: true, user: getUser(req.params.email) });
 });
 app.get('/', (req, res) => {
-     res.sendFile(path.join(_dirname,'landing.html'));
+     res.sendFile(path.join(__dirname,'landing.html'));
      });
 
 
