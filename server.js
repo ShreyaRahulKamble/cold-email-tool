@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const https = require('https');
 const Razorpay = require('razorpay');
@@ -34,7 +35,11 @@ function updateUser(email, data) {
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('.'));
+app.use(express.static(_dirname));
+app.get('/', (req, res) => {
+     res.sendFile(path.join(_dirname,'landing.html'));
+     });
+      
 
 // Call Google Gemini API
 function callGemini(prompt) {
