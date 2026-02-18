@@ -9,7 +9,7 @@ const cheerio = require('cheerio');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT ||3001;
+const PORT = process.env.PORT ||3001; 
 
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
@@ -206,9 +206,9 @@ app.get('/api/user/:email', (req, res) => {
 app.listen(PORT, () => {
     console.log('\n✅ Cold Email Tool is RUNNING!');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log(`📧 Landing Page : http://localhost:${PORT}/landing.html`);
-    console.log(`⚡ App          : http://localhost:${PORT}/app.html`);
-    console.log(`💳 Payment Page : http://localhost:${PORT}/payment.html`);
+    console.log(`📧 Landing Page : /landing.html`);
+    console.log(`⚡ App          : /app.html`);
+    console.log(`💳 Payment Page : /payment.html`);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('🤖 Using: Google Gemini AI (FREE)');
     console.log('💰 Payments: Razorpay\n');
