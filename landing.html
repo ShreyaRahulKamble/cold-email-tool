@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ColdEmailAI – Personalized Cold Emails That Get Replies</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800&family=Satoshi:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green: #00D97E;
+            --dark-green: #00A15C;
+            --dark: #080F0A;
+            --card: #0E1A12;
+            --text: #E8F5EE;
+            --muted: #6B9B7E;
+            --accent: #FFD60A;
+            --border: rgba(0,217,126,0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Satoshi', 'DM Sans', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 10% 10%, rgba(0,217,126,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 90%, rgba(0,161,92,0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Dot grid */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(0,217,126,0.06) 1px, transparent 1px);
+            background-size: 30px 30px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ─── NAVBAR ─── */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            padding: 1.2rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            background: rgba(8,15,10,0.85);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: white;
+        }
+        .logo span { color: var(--green); }
+
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            margin: 0 1.2rem;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: white; }
+
+        .nav-cta {
+            background: var(--green);
+            color: #080F0A;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .nav-cta:hover { background: #00f58e; transform: scale(1.05); }
+
+        /* ─── HERO ─── */
+        .hero {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10rem 2rem 5rem;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(0,217,126,0.08);
+            border: 1px solid rgba(0,217,126,0.25);
+            color: var(--green);
+            padding: 0.5rem 1.2rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 2.5rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 800;
+            line-height: 1.05;
+            margin-bottom: 1.5rem;
+            animation: slideUp 0.6s 0.1s both;
+        }
+
+        .green-text { color: var(--green); }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--muted);
+            max-width: 520px;
+            line-height: 1.8;
+            margin-bottom: 3rem;
+            animation: slideUp 0.6s 0.2s both;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: slideUp 0.6s 0.3s both;
+        }
+
+        .btn-main {
+            background: var(--green);
+            color: #080F0A;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 0 30px rgba(0,217,126,0.3);
+        }
+        .btn-main:hover { background: #00f58e; transform: translateY(-2px); box-shadow: 0 0 50px rgba(0,217,126,0.5); }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 1rem 2.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: border-color 0.2s;
+        }
+        .btn-outline:hover { border-color: var(--green); }
+
+        /* ─── REPLY RATE COMPARISON ─── */
+        .comparison {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto 6rem;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .comp-card {
+            background: var(--card);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .comp-card.bad { border-color: rgba(239,68,68,0.2); }
+        .comp-card.good { border-color: rgba(0,217,126,0.3); box-shadow: 0 0 30px rgba(0,217,126,0.08); }
+
+        .comp-header {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 1rem;
+        }
+
+        .comp-icon { font-size: 1.3rem; }
+
+        .email-preview {
+            background: rgba(255,255,255,0.04);
+            border-radius: 10px;
+            padding: 1.2rem;
+            font-size: 0.8rem;
+            line-height: 1.8;
+            color: var(--muted);
+        }
+
+        .email-preview .subject {
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .rate-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 1rem;
+        }
+
+        .rate-badge.low { background: rgba(239,68,68,0.1); color: #F87171; border: 1px solid rgba(239,68,68,0.2); }
+        .rate-badge.high { background: rgba(0,217,126,0.1); color: var(--green); border: 1px solid rgba(0,217,126,0.3); }
+
+        /* ─── STATS ─── */
+        .stats-row {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            padding: 4rem 2rem;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .stat { text-align: center; }
+        .stat-num {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--green);
+            display: block;
+        }
+        .stat-label { font-size: 0.85rem; color: var(--muted); margin-top: 0.3rem; }
+
+        /* ─── HOW IT WORKS ─── */
+        .section {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 6rem 2rem;
+        }
+
+        .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--green);
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .title {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .step {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .step-number {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: rgba(0,217,126,0.1);
+            border: 1px solid rgba(0,217,126,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: var(--green);
+            margin: 0 auto 1.5rem;
+        }
+
+        .step h3 {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.7rem;
+        }
+
+        .step p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+        /* ─── FEATURES ─── */
+        .features-bento {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: auto auto;
+            gap: 1.2rem;
+        }
+
+        .bento-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+        .bento-card:hover { border-color: rgba(0,217,126,0.3); transform: translateY(-3px); }
+        .bento-card.wide { grid-column: span 2; }
+
+        .bento-icon { font-size: 2rem; margin-bottom: 1rem; }
+        .bento-card h3 {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.6rem;
+        }
+        .bento-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+        /* ─── PRICING ─── */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .price-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: transform 0.3s;
+            position: relative;
+        }
+        .price-card:hover { transform: translateY(-5px); }
+        .price-card.featured { border-color: var(--green); box-shadow: 0 0 50px rgba(0,217,126,0.12); }
+
+        .featured-badge {
+            position: absolute;
+            top: -13px;
+            right: 24px;
+            background: var(--green);
+            color: #080F0A;
+            font-weight: 800;
+            font-size: 0.72rem;
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+        }
+
+        .plan-name {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.2rem;
+        }
+
+        .plan-price {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 0.3rem;
+        }
+        .plan-price sup { font-size: 1.5rem; vertical-align: top; margin-top: 0.6rem; display: inline-block; }
+        .plan-period { color: var(--muted); font-size: 0.85rem; margin-bottom: 2rem; }
+
+        .plan-features { list-style: none; margin-bottom: 2rem; }
+        .plan-features li {
+            padding: 0.6rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-size: 0.88rem;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .plan-features li::before { content: '✓'; color: var(--green); font-weight: 800; }
+
+        .plan-btn {
+            width: 100%;
+            padding: 0.9rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .plan-btn.filled { background: var(--green); color: #080F0A; }
+        .plan-btn.filled:hover { background: #00f58e; }
+        .plan-btn.border-btn { background: transparent; color: var(--text); border: 1px solid rgba(255,255,255,0.15); }
+        .plan-btn.border-btn:hover { border-color: var(--green); }
+
+        /* ─── TESTIMONIALS ─── */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .t-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .stars { color: var(--accent); font-size: 0.9rem; margin-bottom: 1rem; }
+        .t-text { font-size: 0.9rem; color: var(--muted); line-height: 1.8; font-style: italic; margin-bottom: 1.5rem; }
+        .t-author { display: flex; align-items: center; gap: 0.8rem; }
+        .t-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--green), #0891B2);
+            display: flex; align-items: center; justify-content: center;
+            color: #080F0A; font-weight: 800;
+        }
+        .t-name { font-weight: 700; font-size: 0.9rem; }
+        .t-role { font-size: 0.78rem; color: var(--muted); }
+
+        /* ─── FINAL CTA ─── */
+        .final-cta {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 6rem 2rem;
+        }
+
+        .cta-box {
+            background: var(--card);
+            border: 1px solid rgba(0,217,126,0.2);
+            border-radius: 24px;
+            padding: 5rem 3rem;
+            max-width: 700px;
+            margin: 0 auto;
+            box-shadow: 0 0 80px rgba(0,217,126,0.08);
+        }
+
+        .cta-box h2 {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        .cta-box p { color: var(--muted); margin-bottom: 2.5rem; font-size: 1rem; }
+
+        footer {
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .comparison { grid-template-columns: 1fr; }
+            .features-bento { grid-template-columns: 1fr; }
+            .bento-card.wide { grid-column: span 1; }
+            .nav-links { display: none; }
+            nav { padding: 1.2rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+    <div class="logo">ColdEmail<span>AI</span> ✉️</div>
+    <div class="nav-links">
+        <a href="#">How It Works</a>
+        <a href="#">Pricing</a>
+        <a href="#">Examples</a>
+    </div>
+    <a href="app.html" class="nav-cta">Try Free →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-badge">✉️ AI-Powered Cold Email Personalization</div>
+    <h1>Cold Emails That<br>Actually Get <span class="green-text">Replies</span></h1>
+    <p>Stop sending copy-paste templates. AI analyzes your prospect's background and writes hyper-personalized emails that get 5x more replies — in 10 seconds.</p>
+    <div class="hero-cta">
+        <a href="app.html" class="btn-main">✉️ Write Free Email</a>
+        <a href="#compare" class="btn-outline">See The Difference ↓</a>
+    </div>
+</section>
+
+<!-- COMPARISON -->
+<div class="comparison" id="compare">
+    <div class="comp-card bad">
+        <div class="comp-header" style="color: #F87171;">
+            <span class="comp-icon">❌</span> Generic Template
+        </div>
+        <div class="email-preview">
+            <div class="subject">Subject: Partnership Opportunity</div>
+            Hi [Name],<br><br>
+            I hope this email finds you well. I wanted to reach out about a potential partnership opportunity.<br><br>
+            We help companies like yours grow their business. Let me know if you're interested in a call.<br><br>
+            Best regards,<br>
+            [Your name]
+        </div>
+        <div class="rate-badge low">📉 1–2% Reply Rate</div>
+    </div>
+    <div class="comp-card good">
+        <div class="comp-header" style="color: var(--green);">
+            <span class="comp-icon">✅</span> ColdEmailAI Output
+        </div>
+        <div class="email-preview">
+            <div class="subject">Subject: Your Series B + scaling sales?</div>
+            Hi Priya,<br><br>
+            Saw TechCorp just raised ₹50Cr — congrats! Growing a sales team that fast usually means cold outreach becomes a bottleneck.<br><br>
+            We helped 3 similar SaaS companies 3x their meeting rate without adding headcount. Worth a 15-min chat?<br><br>
+            — Arjun
+        </div>
+        <div class="rate-badge high">📈 12–18% Reply Rate</div>
+    </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+    <div class="stat">
+        <span class="stat-num">5.2x</span>
+        <div class="stat-label">Higher Reply Rate</div>
+    </div>
+    <div class="stat">
+        <span class="stat-num">10s</span>
+        <div class="stat-label">Per Personalized Email</div>
+    </div>
+    <div class="stat">
+        <span class="stat-num">50K+</span>
+        <div class="stat-label">Emails Generated</div>
+    </div>
+    <div class="stat">
+        <span class="stat-num">4.9★</span>
+        <div class="stat-label">User Rating</div>
+    </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+    <div class="label">Simple Process</div>
+    <h2 class="title">3 Steps to More Replies</h2>
+    <div class="steps">
+        <div class="step">
+            <div class="step-number">1</div>
+            <h3>Enter Prospect Info</h3>
+            <p>Paste their LinkedIn URL, company website, or fill in basic details. We extract what matters.</p>
+        </div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <h3>AI Analyzes & Writes</h3>
+            <p>Claude AI finds pain points, recent news, and unique hooks to make the email feel personal.</p>
+        </div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <h3>Send & Get Replies</h3>
+            <p>Copy the email, send it, and watch your reply rate skyrocket. It's that simple.</p>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES BENTO -->
+<section class="section" style="padding-top: 0;">
+    <div class="label">Everything Included</div>
+    <h2 class="title">Built for Serious Outreach</h2>
+    <div class="features-bento">
+        <div class="bento-card wide">
+            <div class="bento-icon">🧠</div>
+            <h3>Deep Prospect Analysis</h3>
+            <p>Enter a LinkedIn URL or company website and our AI reads between the lines — recent funding, hiring trends, tech stack, pain points. Every email starts with a hook that proves you did your homework.</p>
+        </div>
+        <div class="bento-card">
+            <div class="bento-icon">📧</div>
+            <h3>4 Email Types</h3>
+            <p>First outreach, follow-ups, meeting requests, and value pitches — each with the right structure.</p>
+        </div>
+        <div class="bento-card">
+            <div class="bento-icon">⚡</div>
+            <h3>10 Seconds Flat</h3>
+            <p>What used to take 30 minutes of research + writing now takes 10 seconds.</p>
+        </div>
+        <div class="bento-card">
+            <div class="bento-icon">🎯</div>
+            <h3>80–120 Words Max</h3>
+            <p>Short, punchy emails get more replies. Our AI respects your prospect's time.</p>
+        </div>
+        <div class="bento-card">
+            <div class="bento-icon">🔄</div>
+            <h3>Instant Rewrites</h3>
+            <p>Not happy? Hit regenerate for a completely fresh approach in seconds.</p>
+        </div>
+        <div class="bento-card">
+            <div class="bento-icon">📋</div>
+            <h3>One-Click Copy</h3>
+            <p>Subject line and body copied separately. Paste directly into Gmail or your CRM.</p>
+        </div>
+    </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" style="padding-top: 0;">
+    <div class="label">Pricing</div>
+    <h2 class="title">Pay Only For What You Need</h2>
+    <div class="pricing-grid">
+        <div class="price-card">
+            <div class="plan-name">Free Trial</div>
+            <div class="plan-price"><sup>₹</sup>0</div>
+            <div class="plan-period">No credit card</div>
+            <ul class="plan-features">
+                <li>5 emails per month</li>
+                <li>All email types</li>
+                <li>Manual entry mode</li>
+                <li>Basic personalization</li>
+            </ul>
+            <a href="app.html" class="plan-btn border-btn">Start Free</a>
+        </div>
+        <div class="price-card featured">
+            <div class="featured-badge">BEST VALUE</div>
+            <div class="plan-name">Starter</div>
+            <div class="plan-price"><sup>₹</sup>2,299</div>
+            <div class="plan-period">per month</div>
+            <ul class="plan-features">
+                <li>100 emails per month</li>
+                <li>Website URL analysis</li>
+                <li>A/B subject line variants</li>
+                <li>Company news detection</li>
+                <li>Priority generation</li>
+            </ul>
+            <a href="payment.html" class="plan-btn filled">Upgrade Now</a>
+        </div>
+        <div class="price-card">
+            <div class="plan-name">Pro</div>
+            <div class="plan-price"><sup>₹</sup>5,999</div>
+            <div class="plan-period">per month</div>
+            <ul class="plan-features">
+                <li>500 emails per month</li>
+                <li>Everything in Starter</li>
+                <li>CRM export</li>
+                <li>Custom templates</li>
+                <li>API access</li>
+            </ul>
+            <a href="payment.html" class="plan-btn border-btn">Go Pro</a>
+        </div>
+    </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section" style="padding-top: 0;">
+    <div class="label">Real Results</div>
+    <h2 class="title">What Our Users Say</h2>
+    <div class="testimonials-grid">
+        <div class="t-card">
+            <div class="stars">★★★★★</div>
+            <div class="t-text">"My reply rate jumped from 2% to 14% in the first week. The AI finds things about prospects I would never have researched myself."</div>
+            <div class="t-author">
+                <div class="t-avatar">S</div>
+                <div>
+                    <div class="t-name">Suresh Pillai</div>
+                    <div class="t-role">Sales Director, SaaS startup, Pune</div>
+                </div>
+            </div>
+        </div>
+        <div class="t-card">
+            <div class="stars">★★★★★</div>
+            <div class="t-text">"I was spending 45 minutes researching and writing each cold email. Now it's 10 seconds and the quality is actually better."</div>
+            <div class="t-author">
+                <div class="t-avatar" style="background: linear-gradient(135deg, #7C3AED, var(--green));">M</div>
+                <div>
+                    <div class="t-name">Meera Iyer</div>
+                    <div class="t-role">Agency Founder, Chennai</div>
+                </div>
+            </div>
+        </div>
+        <div class="t-card">
+            <div class="stars">★★★★★</div>
+            <div class="t-text">"Booked 12 meetings in my first month using this. The emails feel genuinely personal — prospects always comment on the research."</div>
+            <div class="t-author">
+                <div class="t-avatar" style="background: linear-gradient(135deg, #F59E0B, #EF4444);">V</div>
+                <div>
+                    <div class="t-name">Vikram Anand</div>
+                    <div class="t-role">Business Development, Hyderabad</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+    <div class="cta-box">
+        <h2>Start Getting More Replies Today</h2>
+        <p>5 free emails, no credit card required. See the difference in your first send.</p>
+        <a href="app.html" class="btn-main" style="display: inline-block; padding: 1.1rem 3rem; font-size: 1rem;">✉️ Generate Your First Email Free</a>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <p>© 2024 ColdEmailAI • Powered by Claude AI</p>
+    <p style="margin-top: 0.5rem;">
+        <a href="#" style="color: var(--muted); text-decoration: none; margin: 0 1rem;">Terms</a>
+        <a href="#" style="color: var(--muted); text-decoration: none; margin: 0 1rem;">Privacy</a>
+        <a href="#" style="color: var(--muted); text-decoration: none; margin: 0 1rem;">Contact</a>
+    </p>
+</footer>
+
+</body>
+</html>

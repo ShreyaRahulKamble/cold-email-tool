@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Cold Email - ColdEmailAI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: #2D3748;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .credits {
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .panel h2 {
+            margin-bottom: 1.5rem;
+            color: #2D3748;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #48BB78;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .input-hint {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-top: 0.3rem;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #718096;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: #48BB78;
+            border-bottom-color: #48BB78;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .generate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #48BB78 0%, #38A169 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .generate-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .output-box {
+            background: #f9f9f9;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 1.5rem;
+            min-height: 350px;
+            white-space: pre-wrap;
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+        
+        .output-box.empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-style: italic;
+        }
+        
+        .email-field {
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: #F7FAFC;
+            border-radius: 5px;
+        }
+        
+        .email-field label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #718096;
+            margin-bottom: 0.3rem;
+        }
+        
+        .email-field-content {
+            font-weight: 600;
+            color: #2D3748;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid #48BB78;
+            background: white;
+            color: #48BB78;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background: #48BB78;
+            color: white;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            color: #48BB78;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #48BB78;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .upgrade-banner {
+            background: linear-gradient(135deg, #48BB78 0%, #38A169 100%);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+        
+        .upgrade-btn {
+            background: white;
+            color: #48BB78;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">✉️ ColdEmailAI</div>
+        <div class="credits">
+            Credits: <span id="creditCount">5</span> / <span id="creditLimit">5</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Input Panel -->
+        <div class="panel">
+            <h2>Prospect Information</h2>
+            
+            <div id="upgradeBanner" class="upgrade-banner" style="display: none;">
+                <p><strong>Out of credits!</strong> Upgrade to continue generating emails.</p>
+                <button class="upgrade-btn" onclick="showPricing()">Upgrade Now</button>
+            </div>
+            
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('linkedin')">LinkedIn URL</button>
+                <button class="tab" onclick="switchTab('website')">Company Website</button>
+                <button class="tab" onclick="switchTab('manual')">Manual Entry</button>
+            </div>
+            
+            <form id="generateForm">
+                <!-- LinkedIn Tab -->
+                <div id="linkedin-tab" class="tab-content active">
+                    <div class="form-group">
+                        <label for="linkedinUrl">LinkedIn Profile URL</label>
+                        <input 
+                            type="url" 
+                            id="linkedinUrl" 
+                            placeholder="https://linkedin.com/in/john-doe"
+                        />
+                        <div class="input-hint">Paste prospect's LinkedIn profile URL</div>
+                    </div>
+                </div>
+                
+                <!-- Website Tab -->
+                <div id="website-tab" class="tab-content">
+                    <div class="form-group">
+                        <label for="websiteUrl">Company Website</label>
+                        <input 
+                            type="url" 
+                            id="websiteUrl" 
+                            placeholder="https://company.com"
+                        />
+                        <div class="input-hint">We'll analyze the company's website</div>
+                    </div>
+                </div>
+                
+                <!-- Manual Tab -->
+                <div id="manual-tab" class="tab-content">
+                    <div class="form-group">
+                        <label for="prospectName">Prospect Name</label>
+                        <input type="text" id="prospectName" placeholder="John Doe" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="company">Company</label>
+                        <input type="text" id="company" placeholder="Acme Corp" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="role">Their Role</label>
+                        <input type="text" id="role" placeholder="VP of Marketing" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="context">Additional Context (Optional)</label>
+                        <textarea 
+                            id="context" 
+                            placeholder="E.g., They recently raised Series B funding, expanding to Europe..."
+                        ></textarea>
+                    </div>
+                </div>
+                
+                <hr style="margin: 2rem 0; border: 1px solid #e0e0e0;" />
+                
+                <div class="form-group">
+                    <label for="emailType">Email Type</label>
+                    <select id="emailType">
+                        <option value="first-outreach">First Outreach</option>
+                        <option value="follow-up">Follow-up Email</option>
+                        <option value="meeting-request">Meeting Request</option>
+                        <option value="value-pitch">Value Proposition</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="yourValue">What You Offer</label>
+                    <textarea 
+                        id="yourValue" 
+                        placeholder="E.g., We help SaaS companies reduce churn by 30% using AI-powered retention strategies..."
+                        required
+                    ></textarea>
+                    <div class="input-hint">Briefly explain your value proposition</div>
+                </div>
+                
+                <button type="submit" class="generate-btn" id="generateBtn">
+                    ✨ Generate Personalized Email
+                </button>
+            </form>
+        </div>
+        
+        <!-- Output Panel -->
+        <div class="panel">
+            <h2>Generated Email</h2>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Analyzing prospect and crafting email...</p>
+            </div>
+            
+            <div id="emailOutput" style="display: none;">
+                <div class="email-field">
+                    <label>Subject Line:</label>
+                    <div class="email-field-content" id="subjectLine"></div>
+                </div>
+                
+                <div class="email-field">
+                    <label>Email Body:</label>
+                </div>
+                
+                <div id="output" class="output-box"></div>
+            </div>
+            
+            <div id="emptyState" class="output-box empty">
+                Your personalized cold email will appear here...
+            </div>
+            
+            <div class="action-buttons" id="actionButtons" style="display: none;">
+                <button class="action-btn" onclick="copyEmail()">📋 Copy Email</button>
+                <button class="action-btn" onclick="copySubject()">📝 Copy Subject</button>
+                <button class="action-btn" onclick="regenerate()">🔄 Regenerate</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let userCredits = 5;
+        let userPlan = 'free';
+        let currentTab = 'linkedin';
+        let lastGeneration = null;
+        
+        // Switch between tabs
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(`${tab}-tab`).classList.add('active');
+        }
+        
+        // Update credit display
+        function updateCredits() {
+            document.getElementById('creditCount').textContent = userCredits;
+            
+            if (userCredits <= 0) {
+                document.getElementById('upgradeBanner').style.display = 'block';
+                document.getElementById('generateBtn').disabled = true;
+            }
+        }
+        
+        // Handle form submission
+        document.getElementById('generateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (userCredits <= 0 && userPlan === 'free') {
+                alert('Out of credits! Please upgrade to continue.');
+                return;
+            }
+            
+            // Collect data based on active tab
+            let prospectData = {
+                mode: currentTab,
+                emailType: document.getElementById('emailType').value,
+                yourValue: document.getElementById('yourValue').value
+            };
+            
+            if (currentTab === 'linkedin') {
+                prospectData.linkedinUrl = document.getElementById('linkedinUrl').value;
+                if (!prospectData.linkedinUrl) {
+                    alert('Please enter a LinkedIn URL');
+                    return;
+                }
+            } else if (currentTab === 'website') {
+                prospectData.websiteUrl = document.getElementById('websiteUrl').value;
+                if (!prospectData.websiteUrl) {
+                    alert('Please enter a website URL');
+                    return;
+                }
+            } else {
+                prospectData.name = document.getElementById('prospectName').value;
+                prospectData.company = document.getElementById('company').value;
+                prospectData.role = document.getElementById('role').value;
+                prospectData.context = document.getElementById('context').value;
+                
+                if (!prospectData.name || !prospectData.company) {
+                    alert('Please fill in name and company');
+                    return;
+                }
+            }
+            
+            lastGeneration = prospectData;
+            
+            // Show loading
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('emailOutput').style.display = 'none';
+            document.getElementById('actionButtons').style.display = 'none';
+            
+            try {
+                const response = await fetch('http://localhost:3001/api/generate-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(prospectData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Display output
+                    document.getElementById('subjectLine').textContent = data.subject;
+                    document.getElementById('output').textContent = data.body;
+                    document.getElementById('emailOutput').style.display = 'block';
+                    document.getElementById('actionButtons').style.display = 'flex';
+                    
+                    // Decrease credits
+                    userCredits--;
+                    updateCredits();
+                } else {
+                    alert('Error: ' + data.error);
+                    document.getElementById('emptyState').style.display = 'flex';
+                }
+            } catch (error) {
+                alert('Connection error. Make sure the server is running on port 3001.');
+                console.error(error);
+                document.getElementById('emptyState').style.display = 'flex';
+            } finally {
+                // Hide loading
+                document.getElementById('loading').classList.remove('active');
+            }
+        });
+        
+        // Copy email body
+        function copyEmail() {
+            const email = document.getElementById('output').textContent;
+            navigator.clipboard.writeText(email).then(() => {
+                alert('✅ Email copied to clipboard!');
+            });
+        }
+        
+        // Copy subject line
+        function copySubject() {
+            const subject = document.getElementById('subjectLine').textContent;
+            navigator.clipboard.writeText(subject).then(() => {
+                alert('✅ Subject line copied!');
+            });
+        }
+        
+        // Regenerate with same inputs
+        function regenerate() {
+            if (lastGeneration) {
+                document.getElementById('generateForm').dispatchEvent(new Event('submit'));
+            }
+        }
+        
+        // Show pricing modal
+        function showPricing() {
+            alert('Upgrade options:\n\nStarter: $29/month - 100 emails\nPro: $79/month - 500 emails\n\nVisit billing page to upgrade!');
+        }
+        
+        // Initialize
+        updateCredits();
+    </script>
+</body>
+</html>
