@@ -252,7 +252,7 @@
                 const email = prompt('Enter your email:') || 'customer@example.com';
                 
                 // Create order on backend
-                const response = await fetch('http://localhost:3001/api/create-order', {
+                const response = await fetch('/api/create-order', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
