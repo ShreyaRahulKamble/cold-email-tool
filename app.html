@@ -486,7 +486,7 @@
             document.getElementById('actionButtons').style.display = 'none';
             
             try {
-                const response = await fetch('http://localhost:3001/api/generate-email', {
+                const response = await fetch('/api/generate-email', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
