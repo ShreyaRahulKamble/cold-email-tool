@@ -46,12 +46,12 @@ function callGemini(prompt) {
         const apiKey = process.env.GEMINI_API_KEY;
         const body = JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { maxOutputTokens: 1500, temperature: 0.7 }
+            generationConfig: { maxOutputTokens: 2000, temperature: 0.7, thinking_config: {include_thoughts: false, thinking_budget: 1024 }
         });
 
         const options = {
             hostname: 'generativelanguage.googleapis.com',
-            path: `/v1/models/gemini-3-flash-preview:generateContent?key=${apiKey}`,
+            path: `/v1/models/gemini-2.5-flash-preview:generateContent?key=${apiKey}`,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
