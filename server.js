@@ -56,7 +56,7 @@ function callGemini(prompt) {
                               }
         });
 
-        con st options = {
+        const options = {
             hostname: 'generativelanguage.googleapis.com',
             path: `/v1/models/gemini-2.5-flash-preview:generateContent?key=${apiKey}`,
             method: 'POST',
