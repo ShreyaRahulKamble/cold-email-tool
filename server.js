@@ -112,13 +112,12 @@ app.post('/api/generate-email', async (req, res) => {
             'first-outreach': 'First cold outreach - warm, brief, focus on one specific pain point, end with a soft ask (not pushing for immediate meeting).',
             'follow-up': 'Follow-up to previous email - add new value, reference previous contact subtly, stronger CTA.',
             'meeting-request': 'Request a meeting - show clear ROI, suggest specific short time (15 min), make it easy to say yes.',
-            'value-pitch': 'Value proposition pitch - include a specific result/metric, explain ROI clearly, create mild urgency.'
+            'value-pitch': 'Value proposition pitch - include a specific result/metric, explain ROI clearly, create mild urgency.',
             'breakup': 'Break-up email - final attempt, create FOMO, offer to close the loop, permission to unsubscribe.',
             'reengagement': 'Re-engagement email - revive old lead, reference previous interest, offer fresh value.',
             'partnership': 'Partnership proposal - mutual benefit, clear win-win, specific collaboration idea.',
             'case-study': 'Case study share - social proof, specific results, relevant to their industry.',
-            'referral': 'Referral request - ask for introduction, make it easy, show value for both parties.'
-
+            'referral': 'Referral request - ask for introduction, make it easy, show value for both parties.'     
         };
 
         const prompt = `You are a world-class cold email copywriter. Write a highly personalized cold email.
